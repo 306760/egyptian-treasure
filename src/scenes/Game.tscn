@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://nodes/brick/Brick.tscn" type="PackedScene" id=1]
 [ext_resource path="res://nodes/background-platform/BackgroundPlatform.tscn" type="PackedScene" id=2]
@@ -10,19 +10,35 @@
 [ext_resource path="res://nodes/sound-button/SoundButton.tscn" type="PackedScene" id=8]
 [ext_resource path="res://nodes/platform/Platform.tscn" type="PackedScene" id=9]
 
-[sub_resource type="StyleBoxEmpty" id=1]
+[sub_resource type="GDScript" id=8]
 
-content_margin_left = -1.0
-content_margin_right = -1.0
-content_margin_top = -1.0
-content_margin_bottom = -1.0
+script/source = "extends Area2D
 
-[sub_resource type="StyleBoxEmpty" id=2]
+# class member variables go here, for example:
+# var a = 2
+# var b = \"textvar\"
 
-content_margin_left = -1.0
-content_margin_right = -1.0
-content_margin_top = -1.0
-content_margin_bottom = -1.0
+func _ready():
+	# Called when the node is added to the scene for the first time.
+	# Initialization here
+	pass
+
+#func _process(delta):
+#	# Called every frame. Delta is time since last frame.
+#	# Update game logic here.
+#	pass
+
+
+func _on_Area2D_body_shape_entered(body_id, body, body_shape, area_shape):
+	queue_free()
+	print(\"K\")
+	sprite.hide()
+"
+
+[sub_resource type="CircleShape2D" id=9]
+
+custom_solver_bias = 0.0
+radius = 10.0
 
 [sub_resource type="StyleBoxEmpty" id=3]
 
@@ -39,6 +55,20 @@ content_margin_top = -1.0
 content_margin_bottom = -1.0
 
 [sub_resource type="StyleBoxEmpty" id=5]
+
+content_margin_left = -1.0
+content_margin_right = -1.0
+content_margin_top = -1.0
+content_margin_bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=6]
+
+content_margin_left = -1.0
+content_margin_right = -1.0
+content_margin_top = -1.0
+content_margin_bottom = -1.0
+
+[sub_resource type="StyleBoxEmpty" id=7]
 
 content_margin_left = -1.0
 content_margin_right = -1.0
@@ -98,15 +128,41 @@ _sections_unfolded = [ "Transform" ]
 
 [node name="Stage" type="Node2D" parent="." index="1"]
 
-editor/display_folded = true
-
 [node name="Ladder" parent="Stage" index="0" instance=ExtResource( 6 )]
 
+visible = false
 position = Vector2( 390, 620 )
+
+[node name="Area2D" type="Area2D" parent="Stage" index="1"]
+
+position = Vector2( 708.278, 592.384 )
+scale = Vector2( 4.51088, 2.94942 )
+input_pickable = true
+gravity_vec = Vector2( 0, 1 )
+gravity = 98.0
+linear_damp = 0.1
+angular_damp = 1.0
+audio_bus_override = false
+audio_bus_name = "Master"
+script = SubResource( 8 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Gold" type="Sprite" parent="Stage/Area2D" index="0"]
+
+position = Vector2( 2.36897, 5.74725 )
+scale = Vector2( 2.12371, 2.97049 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Stage/Area2D" index="1"]
+
+position = Vector2( -12.2916, -2.51289 )
+scale = Vector2( 2.83348, 2.76158 )
+shape = SubResource( 9 )
 
 [node name="Player" parent="." index="2" instance=ExtResource( 7 )]
 
-position = Vector2( 77, 648 )
+position = Vector2( 133.842, 646.826 )
 gravity_scale = 10.0
 _sections_unfolded = [ "Angular", "Linear" ]
 
@@ -121,15 +177,18 @@ transform = Transform2D( 1, 0, 0, 1, 0, 0 )
 [node name="SoundButton" parent="UI" index="0" instance=ExtResource( 8 )]
 
 light_mask = 0
-custom_styles/hover = SubResource( 1 )
-custom_styles/pressed = SubResource( 2 )
-custom_styles/focus = SubResource( 3 )
-custom_styles/disabled = SubResource( 4 )
-custom_styles/normal = SubResource( 5 )
+margin_right = 180.0
+custom_styles/hover = SubResource( 3 )
+custom_styles/pressed = SubResource( 4 )
+custom_styles/focus = SubResource( 5 )
+custom_styles/disabled = SubResource( 6 )
+custom_styles/normal = SubResource( 7 )
 _sections_unfolded = [ "Material", "Visibility", "custom_colors", "custom_fonts", "custom_styles" ]
 
 [node name="Platform" parent="." index="4" instance=ExtResource( 9 )]
 
 position = Vector2( 267, 576 )
+
+[connection signal="body_shape_entered" from="Stage/Area2D" to="Stage/Area2D" method="_on_Area2D_body_shape_entered"]
 
 
